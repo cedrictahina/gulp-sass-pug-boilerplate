@@ -1,0 +1,25 @@
+{
+  "name": "front-end-starter-kit",
+  "version": "1.0.0",
+  "description": "Simple front-end starter kit using Node Js, Gulp, Pug, Sass, Babel",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cedrictahina/front-end-starter-kit.git"
+  },
+  "keywords": [
+    "Cedric Tahina",
+    "Front End Development",
+    "Starter Kit",
+    "Boilerplate"
+  ],
+  "author": "Cedric Tahina Rasoamanana",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cedrictahina/front-end-starter-kit/issues"
+  },
+  "homepage": "https://github.com/cedrictahina/front-end-starter-kit#readme"
+}
