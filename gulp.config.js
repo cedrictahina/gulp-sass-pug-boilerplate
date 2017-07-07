@@ -23,6 +23,15 @@ export default {
     styles: {
       src: './app/styles',
       dest: './dist/styles'
+    },
+    views: {
+      src: [
+        './app/views/**/*.pug',
+        '!./app/views/**/_*.pug',
+        '!./app/views/_*/**/*.pug',
+        '!./app/views/**/**/_*/*.pug'
+      ],
+      dest: './dist'
     }
   }
 }

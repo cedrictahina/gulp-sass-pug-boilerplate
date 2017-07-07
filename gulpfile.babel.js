@@ -16,7 +16,7 @@ gulp.task('styles', () => {
   return gulp.src(config.routes.styles.src+ '/*.scss')
     .pipe(plumber({
         errorHandler: notify.onError({
-          title: 'Error: Compiling SCSS.',
+          title: 'Error: Compiling SCSS files.',
           message: '<%= error.message %>'
         })
       }))
@@ -32,7 +32,24 @@ gulp.task('styles', () => {
     .pipe(browserSync.stream())
     .pipe(gulp.dest(config.routes.styles.dest))
     .pipe(notify({
-			title: 'SCSS Compiled and Minified succesfully!',
-			message: 'scss task completed.'
+			title: 'SCSS compiled and minified succesfully!',
+			message: 'Styles task completed.'
+		}));
+});
+
+// compile views
+gulp.task('views', () => {
+	return gulp.src(config.routes.views.src)
+		.pipe(plumber({
+			errorHandler: notify.onError({
+				title: 'Error: Compiling Pug files.',
+				message: '<%= error.message %>'
+			})
+		}))
+		.pipe(pug())
+		.pipe(gulp.dest(config.routes.views.dest))
+		.pipe(notify({
+			title: 'Pug Compiled succesfully.',
+			message: 'Views task completed.'
 		}));
 });
