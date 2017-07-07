@@ -10,6 +10,9 @@ import notify from 'gulp-notify'
 import sourcemaps from 'gulp-sourcemaps'
 import autoprefixer from 'gulp-autoprefixer'
 import rename from 'gulp-rename'
+import concat from 'gulp-concat'
+import babel from 'gulp-babel'
+import uglify from 'gulp-uglify'
 
 // SCSS
 gulp.task('styles', () => {
@@ -39,17 +42,39 @@ gulp.task('styles', () => {
 
 // compile views
 gulp.task('views', () => {
-	return gulp.src(config.routes.views.src)
+  return gulp.src(config.routes.views.src)
+    .pipe(plumber({
+      errorHandler: notify.onError({
+        title: 'Error: Compiling Pug files.',
+        message: '<%= error.message %>'
+      })
+    }))
+    .pipe(pug())
+    .pipe(gulp.dest(config.routes.views.dest))
+    .pipe(notify({
+      title: 'Pug Compiled succesfully.',
+      message: 'Views task completed.'
+    }));
+});
+
+/* Transpiling ES6 code to ES5, concat and minify JS files into a single file */
+
+gulp.task('scripts', () => {
+	return gulp.src(config.routes.scripts.src + '/*.js')
 		.pipe(plumber({
 			errorHandler: notify.onError({
-				title: 'Error: Compiling Pug files.',
+				title: 'Error: Compiling Javascript files',
 				message: '<%= error.message %>'
 			})
 		}))
-		.pipe(pug())
-		.pipe(gulp.dest(config.routes.views.dest))
+		.pipe(sourcemaps.init())
+		.pipe(concat('app.js'))
+		.pipe(babel())
+		.pipe(uglify())
+		.pipe(sourcemaps.write())
+		.pipe(gulp.dest(config.routes.scripts.dest))
 		.pipe(notify({
-			title: 'Pug Compiled succesfully.',
-			message: 'Views task completed.'
+			title: 'JavaScript Task',
+			message: 'Your javascript files been compiled, minified and concatenated successfully.'
 		}));
 });
