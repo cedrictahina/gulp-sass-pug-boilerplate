@@ -17,9 +17,10 @@ import source from 'vinyl-source-stream';
 import watchify from 'watchify'
 import buffer from 'vinyl-buffer'
 import babelify from 'babelify'
+import del from 'del'
 
-// SCSS
-gulp.task('styles', () => {
+// Styles Task
+export function stylesTask() {
   return gulp.src(config.routes.styles.src + '/*.scss')
     .pipe(plumber({
       errorHandler: notify.onError({
@@ -42,10 +43,13 @@ gulp.task('styles', () => {
       title: 'SCSS compiled and minified succesfully!',
       message: 'Styles task completed.'
     }));
+}
+
+gulp.task('styles', () => {
+  return stylesTask();
 });
 
-// compile views
-gulp.task('views', () => {
+export function viewsTask() {
   return gulp.src(config.routes.views.src)
     .pipe(plumber({
       errorHandler: notify.onError({
@@ -53,14 +57,21 @@ gulp.task('views', () => {
         message: '<%= error.message %>'
       })
     }))
-    .pipe(pug())
+    .pipe(pug({
+      pretty: true
+    }))
     .pipe(gulp.dest(config.routes.views.dest))
     .pipe(notify({
       title: 'Pug Compiled succesfully.',
       message: 'Views task completed.'
     }));
+}
+
+gulp.task('views', () => {
+  return viewsTask();
 });
 
+// Scripts task
 /* Transpiling ES6 code to ES5, concat and minify JS files into a single file */
 export function scriptsTask() {
   watchify.args.debug = true;
@@ -100,4 +111,13 @@ export function scriptsTask() {
 
 gulp.task('scripts', () => {
   return scriptsTask();
+});
+
+export function cleanDist() {
+  const dist = config.baseDirectories.dist;
+  return del([config.baseDirectories.dist], { force: true});
+}
+
+gulp.task('cleanDist', () => {
+  cleanDist();
 });
