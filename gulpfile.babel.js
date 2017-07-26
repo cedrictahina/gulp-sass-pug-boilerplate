@@ -124,7 +124,7 @@ export function watchTasks() {
 	gulp.watch(config.routes.scripts.all, gulp.series(scriptsTask));
 }
 
-const serve = gulp.series(gulp.parallel(
+const dev = gulp.series(cleanDist, gulp.parallel(
   viewsTask,
   stylesTask,
   scriptsTask,
@@ -134,4 +134,14 @@ const serve = gulp.series(gulp.parallel(
   }
 ));
 
-export { serve };
+export { dev };
+
+const build = gulp.series(cleanDist, gulp.parallel(
+  viewsTask,
+  stylesTask,
+  scriptsTask, (done) => {
+    done();
+  }
+));
+
+export { build };
