@@ -48,10 +48,6 @@ export function stylesTask() {
     }));
 }
 
-gulp.task('styles', () => {
-  return stylesTask();
-});
-
 export function viewsTask() {
   return gulp.src(config.routes.views.src)
     .pipe(plumber({
@@ -71,12 +67,9 @@ export function viewsTask() {
     }));
 }
 
-gulp.task('views', () => {
-  return viewsTask();
-});
-
 // Scripts task
 /* Transpiling ES6 code to ES5, concat and minify JS files into a single file */
+
 export function scriptsTask() {
   watchify.args.debug = true;
   watchify.args.entries = config.routes.scripts.src + 'app.js';
@@ -114,21 +107,31 @@ export function scriptsTask() {
   return bundle();
 }
 
-gulp.task('scripts', () => {
-  return scriptsTask();
-});
-
 export function cleanDist() {
   const dist = config.baseDirectories.dist;
   return del([config.baseDirectories.dist], { force: true});
 }
 
-gulp.task('serve', () => {
+export function browserTask() {
 	bs.init({
 		server: './dist/'
 	});
+}
 
-	gulp.watch(config.routes.styles.all, ['styles']);
-	gulp.watch(config.routes.views.all, ['views']);
-	gulp.watch(config.routes.scripts.all, ['scripts']);
-});
+export function watchTasks() {
+  gulp.watch(config.routes.styles.all, gulp.series(stylesTask));
+	gulp.watch(config.routes.views.all, gulp.series(viewsTask));
+	gulp.watch(config.routes.scripts.all, gulp.series(scriptsTask));
+}
+
+const serve = gulp.series(gulp.parallel(
+  viewsTask,
+  stylesTask,
+  scriptsTask,
+  browserTask,
+  watchTasks,(done) => {
+    done();
+  }
+));
+
+export { serve };

@@ -21,7 +21,7 @@ export default {
       dest: './dist/scripts',
       all: [
       './app/scripts/**/*.js',
-      './gulpfile.babel.js',
+      '!./gulpfile.babel.js',
       '!node_modules/**'
     ]
     },
