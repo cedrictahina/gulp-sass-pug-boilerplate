@@ -18,11 +18,17 @@ export default {
     },
     scripts: {
       src: './app/scripts/',
-      dest: './dist/scripts'
+      dest: './dist/scripts',
+      all: [
+      './app/scripts/**/*.js',
+      './gulpfile.babel.js',
+      '!node_modules/**'
+    ]
     },
     styles: {
       src: './app/styles',
-      dest: './dist/styles'
+      dest: './dist/styles',
+      all: './app/styles/**/*.scss'
     },
     views: {
       src: [
@@ -31,6 +37,7 @@ export default {
         '!./app/views/_*/**/*.pug',
         '!./app/views/**/**/_*/*.pug'
       ],
+      all: './app/views/**',
       dest: './dist'
     }
   }
