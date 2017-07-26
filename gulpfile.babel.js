@@ -18,6 +18,7 @@ import watchify from 'watchify'
 import buffer from 'vinyl-buffer'
 import babelify from 'babelify'
 
+const bs = browserSync.create();
 // SCSS
 gulp.task('styles', () => {
   return gulp.src(config.routes.styles.src + '/*.scss')
@@ -36,8 +37,9 @@ gulp.task('styles', () => {
     .pipe(rename({
       suffix: '.min'
     }))
-    .pipe(browserSync.stream())
+    .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest(config.routes.styles.dest))
+    .pipe(bs.stream())
     .pipe(notify({
       title: 'SCSS compiled and minified succesfully!',
       message: 'Styles task completed.'
@@ -55,6 +57,7 @@ gulp.task('views', () => {
     }))
     .pipe(pug())
     .pipe(gulp.dest(config.routes.views.dest))
+    .pipe(bs.stream())
     .pipe(notify({
       title: 'Pug Compiled succesfully.',
       message: 'Views task completed.'
@@ -88,6 +91,7 @@ export function scriptsTask() {
       }))
       .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(config.routes.scripts.dest))
+      .pipe(bs.stream())
       .pipe(notify({
         title: 'JavaScript task',
         message: 'Your js files has been compiled successfully!'
@@ -100,4 +104,16 @@ export function scriptsTask() {
 
 gulp.task('scripts', () => {
   return scriptsTask();
+});
+
+/* Serving (browserSync) and watching for changes in files */
+
+gulp.task('serve', () => {
+	bs.init({
+		server: './dist/'
+	});
+
+	gulp.watch(config.routes.styles.all, ['styles']);
+	gulp.watch(config.routes.views.all, ['views']);
+	gulp.watch(config.routes.scripts.all, ['scripts']);
 });
