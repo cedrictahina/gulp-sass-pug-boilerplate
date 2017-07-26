@@ -18,8 +18,8 @@ import watchify from 'watchify'
 import buffer from 'vinyl-buffer'
 import babelify from 'babelify'
 import del from 'del'
-
-const bs = browserSync.create();
+import nodemon from 'gulp-nodemon'
+import app from './app'
 
 // SCSS
 export function stylesTask() {
@@ -41,7 +41,7 @@ export function stylesTask() {
     }))
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest(config.routes.styles.dest))
-    .pipe(bs.stream())
+    .pipe(browserSync.stream())
     .pipe(notify({
       title: 'SCSS compiled and minified succesfully!',
       message: 'Styles task completed.'
@@ -60,7 +60,7 @@ export function viewsTask() {
       pretty: true
     }))
     .pipe(gulp.dest(config.routes.views.dest))
-    .pipe(bs.stream())
+    .pipe(browserSync.stream())
     .pipe(notify({
       title: 'Pug Compiled succesfully.',
       message: 'Views task completed.'
@@ -96,7 +96,7 @@ export function scriptsTask() {
       }))
       .pipe(sourcemaps.write('.'))
       .pipe(gulp.dest(config.routes.scripts.dest))
-      .pipe(bs.stream())
+      .pipe(browserSync.stream())
       .pipe(notify({
         title: 'JavaScript task',
         message: 'Your js files has been compiled successfully!'
@@ -113,9 +113,10 @@ export function cleanDist() {
 }
 
 export function browserTask() {
-	bs.init({
-		server: './dist/'
-	});
+	browserSync.init({
+    proxy: 'localhost:3000',
+    port: 3002
+  });
 }
 
 export function watchTasks() {
@@ -124,11 +125,37 @@ export function watchTasks() {
 	gulp.watch(config.routes.scripts.all, gulp.series(scriptsTask));
 }
 
+export function serverTask(cb) {
+  let started = false;
+  return nodemon({
+    script: './app.js',
+    watch: [
+      'gulpfile.babel.js',
+      'app.js'
+    ],
+    ignore: [
+      './node_modules/',
+      './bower_components',
+      './build/**/*'
+    ],
+  })
+  .on('start', function () {
+    if (!started) {
+      cb();
+      started = true;      
+    }
+  })
+  .on('crash', () => {
+    // console.log('nodemon.crash');
+  })
+}
+
 const dev = gulp.series(cleanDist, gulp.parallel(
+  browserTask,
+  serverTask,
   viewsTask,
   stylesTask,
-  scriptsTask,
-  browserTask,
+  scriptsTask,  
   watchTasks,(done) => {
     done();
   }
